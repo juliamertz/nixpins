@@ -1,0 +1,13 @@
+[package]
+name = "nixpins"
+version = "0.1.1"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.96"
+clap = { version = "4.4.4", features = ["derive"] }
+log = { version = "0.4.27", no-default-features = true }
+colog = "1.3.0"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.140"
+serde_nix = { path = "./serde_nix" }
