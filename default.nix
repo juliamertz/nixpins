@@ -7,14 +7,14 @@
   ...
 }:
 let
-  manifest = lib.importTOML ./Cargo.toml;
   runtimeDeps = lib.makeBinPath [
     nix
     nixfmt-rfc-style
   ];
 in
 rustPlatform.buildRustPackage {
-  inherit (manifest.package) name version;
+    pname = "nixpins";
+    version = "0.1.1";
   src = ./.;
 
   nativeBuildInputs = [ makeWrapper ];
@@ -27,5 +27,5 @@ rustPlatform.buildRustPackage {
     allowBuiltinFetchGit = true;
   };
 
-  meta.mainProgram = manifest.package.name;
+  meta.mainProgram = "nixpins";
 }
