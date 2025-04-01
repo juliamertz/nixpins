@@ -6,20 +6,19 @@
   nixfmt-rfc-style,
   ...
 }:
-let
-  runtimeDeps = lib.makeBinPath [
-    nix
-    nixfmt-rfc-style
-  ];
-in
-rustPlatform.buildRustPackage {
-    pname = "nixpins";
-    version = "0.1.1";
+rustPlatform.buildRustPackage rec {
+  pname = "nixpins";
+  version = "0.1.1";
   src = ./.;
 
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [
+    nix
+    nixfmt-rfc-style
+  ];
+
   postInstall = ''
-    wrapProgram "$out/bin/nixpins" --set PATH "${runtimeDeps}"
+    wrapProgram "$out/bin/nixpins" --set PATH "${lib.makeBinPath buildInputs}"
   '';
 
   cargoLock = {

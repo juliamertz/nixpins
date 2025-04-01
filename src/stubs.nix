@@ -3,4 +3,5 @@ let
   enum = name: attrs: { ${name} = attrs; };
   fetchFromGitHub = enum "Github";
   fetchFromGitLab = enum "Gitlab";
+  fetchFlake = enum "Flake";
 in

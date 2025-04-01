@@ -9,6 +9,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
       rust-overlay,
@@ -32,17 +33,19 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages = with rust-bin; [
-            (minimal.override {
-              extensions = [
-                "clippy"
-                "rust-src"
-              ];
-            })
+          packages =
+            self.packages.${system}.default.buildInputs
+            ++ (with rust-bin; [
+              (minimal.override {
+                extensions = [
+                  "clippy"
+                  "rust-src"
+                ];
+              })
 
-            rustfmt
-            rust-analyzer
-          ];
+              rustfmt
+              rust-analyzer
+            ]);
         };
       }
     );

@@ -543,9 +543,10 @@ dependencies = [
  "clap",
  "colog",
  "log",
+ "regex",
  "serde",
  "serde_json",
- "serde_nix",
+ "tvix-serde",
 ]
 
 [[package]]
@@ -819,15 +820,6 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "serde_nix"
-version = "0.1.0"
-dependencies = [
- "serde",
- "thiserror 2.0.12",
- "tvix-serde",
 ]
 
 [[package]]
