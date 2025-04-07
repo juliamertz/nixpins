@@ -3,7 +3,6 @@ mod fetcher;
 mod pins;
 mod prefetch;
 mod url;
-mod utils;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};

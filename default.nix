@@ -3,18 +3,16 @@
   lib,
   makeWrapper,
   nix,
-  nixfmt-rfc-style,
   ...
 }:
 rustPlatform.buildRustPackage rec {
   pname = "nixpins";
-  version = "0.1.1";
+  version = "0.1.2";
   src = ./.;
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [
     nix
-    nixfmt-rfc-style
   ];
 
   postInstall = ''

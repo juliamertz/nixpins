@@ -174,7 +174,7 @@ impl Pins {
             buf += "\n"
         }
 
-        crate::utils::nixfmt(&buf).unwrap()
+        buf
     }
 
     pub fn read_from_file(filepath: impl AsRef<Path>) -> Result<Pins> {
@@ -193,8 +193,7 @@ impl Pins {
     }
 
     pub fn write_to_file(&self, filepath: impl AsRef<Path>) -> Result<()> {
-        let formatted = crate::utils::nixfmt(&self.emit())?;
-        std::fs::write(filepath, formatted)?;
+        std::fs::write(filepath, self.emit())?;
         Ok(())
     }
 }

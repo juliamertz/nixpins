@@ -1,12 +1,31 @@
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Context {
     depth: usize,
+    indent_size: usize,
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self {
+            depth: 1,
+            indent_size: 2,
+        }
+    }
 }
 
 impl Context {
-    fn indent(mut self) -> Context {
+    fn indented(mut self) -> Context {
         self.depth += 1;
         self
+    }
+
+    fn dedented(mut self) -> Context {
+        self.depth -= 1;
+        self
+    }
+
+    fn indent_str(&self) -> String {
+        " ".repeat(self.depth * self.indent_size)
     }
 }
 
@@ -39,30 +58,45 @@ impl Node {
                     "{{ {nodes} }}",
                     nodes = nodes
                         .iter()
-                        .map(|n| n.emit(ctx.indent()))
+                        .map(|n| n.emit(ctx.indented()))
                         .collect::<Vec<_>>()
                         .join(", ")
                 )
             }
             Node::Attrset(nodes) => {
                 format!(
-                    "{{ {nodes} }}",
+                    "{{\n{nodes}\n{indent}}}",
+                    indent = ctx.dedented().indent_str(),
                     nodes = nodes
                         .iter()
-                        .map(|n| n.emit(ctx.indent()))
+                        .map(|n| format!(
+                            "{indent}{text}",
+                            indent = ctx.indent_str(),
+                            text = n.emit(ctx.indented())
+                        ))
                         .collect::<Vec<_>>()
-                        .join(" ")
+                        .join("\n"),
                 )
             }
             Node::Let(nodes) => {
-                format!(
-                    " let\n{nodes}\nin",
-                    nodes = nodes
-                        .iter()
-                        .map(|n| n.emit(ctx.indent()))
-                        .collect::<Vec<_>>()
-                        .join(" ")
-                )
+                let text = if nodes.len() == 1 && nodes.first().unwrap().emit(ctx).len() <= 60 {
+                    format!(" {} ", nodes.first().unwrap().emit(ctx))
+                } else {
+                    format!(
+                        "\n{}\n",
+                        nodes
+                            .iter()
+                            .map(|n| format!(
+                                "{indent}{text}",
+                                indent = ctx.indent_str(),
+                                text = n.emit(ctx.indented())
+                            ))
+                            .collect::<Vec<_>>()
+                            .join("\n")
+                    )
+                };
+
+                format!("let{text}in")
             }
             Node::Comment(text) => format!("# {text}"),
             Node::Attrpath(parts) => parts.join("."),
