@@ -7,7 +7,9 @@ use regex::{Captures, Regex};
 use serde::Deserialize;
 use std::{
     collections::{BTreeMap, HashSet},
+    io::{Read, Write},
     path::Path,
+    process::Stdio,
 };
 
 #[derive(Debug, Deserialize)]
@@ -179,13 +181,13 @@ impl Pins {
 
     pub fn read_from_file(filepath: impl AsRef<Path>) -> Result<Pins> {
         let content = std::fs::read_to_string(filepath.as_ref())?;
-        let stubbed = &format!(
+        let formatted = format_nix(&content)?;
+        let stubbed = format!(
             "{}\n{}",
             include_str!("stubs.nix"),
-            strip_arguments(&content)
+            strip_arguments(&formatted)
         );
-
-        let de = match tvix_serde::from_str(stubbed) {
+        let de = match tvix_serde::from_str(&stubbed) {
             Ok(value) => value,
             Err(err) => anyhow::bail!("Unable to deserialize pins, error: {err:#}"),
         };
@@ -212,4 +214,27 @@ fn strip_arguments(code: &str) -> String {
     buf = re.replace(&buf, |_: &Captures| "").to_string();
 
     buf.trim().to_string()
+}
+
+pub fn format_nix(code: &str) -> Result<String> {
+    let mut child = std::process::Command::new("nixfmt")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()?;
+
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin.write_all(code.as_bytes())?;
+    }
+
+    let mut formatted = String::new();
+    if let Some(mut stdout) = child.stdout.take() {
+        stdout.read_to_string(&mut formatted)?;
+    }
+
+    let status = child.wait()?;
+    if !status.success() {
+        anyhow::bail!("nixfmt failed to format the code");
+    } else {
+        Ok(formatted)
+    }
 }
