@@ -18,12 +18,14 @@ pub struct Input {
     flake: Option<bool>,
 }
 
+pub type Inputs = BTreeMap<String, Input>;
+pub type Sources = BTreeMap<String, Fetcher>;
+
 /// Data structure of pins.nix
 #[derive(Debug, Default, Deserialize)]
 pub struct Pins {
-    pub inputs: BTreeMap<String, Input>,
-
-    pub sources: BTreeMap<String, Fetcher>,
+    pub inputs: Inputs,
+    pub sources: Sources,
 }
 
 impl Pins {
@@ -150,7 +152,10 @@ impl Pins {
             .collect();
 
         let nodes = vec![
-            Node::assign( Node::Identifier("inputs".into()), Node::Attrset(inputs.clone()),),
+            Node::assign(
+                Node::Identifier("inputs".into()),
+                Node::Attrset(inputs.clone()),
+            ),
             Node::assign(Node::ident("sources"), Node::Attrset(sources)),
         ];
 
