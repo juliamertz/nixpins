@@ -60,7 +60,6 @@ enum Command {
     Update {
         /// Name of pin to update
         name: Option<String>,
-
         // #[arg(short, long)]
         // recursive: bool,
     },
