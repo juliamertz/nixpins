@@ -7,9 +7,7 @@ use regex::{Captures, Regex};
 use serde::Deserialize;
 use std::{
     collections::{BTreeMap, HashSet},
-    io::{Read, Write},
     path::Path,
-    process::Stdio,
 };
 
 #[derive(Debug, Deserialize)]

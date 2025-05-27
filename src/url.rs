@@ -1,6 +1,6 @@
-use std::fmt::Write;
 use anyhow::{Context, Result};
 use serde::Deserialize;
+use std::fmt::Write;
 
 /// Url structure for fetchers
 ///
