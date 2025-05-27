@@ -9,11 +9,10 @@ use crate::{
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Locked {
-    #[serde(rename = "lastModified")]
     pub last_modified: i64,
-    #[serde(rename = "narHash")]
-    pub nar_hash: String,
+    pub nar_hash: Option<String>,
     pub owner: String,
     pub repo: String,
     pub rev: String,
@@ -21,6 +20,7 @@ pub struct Locked {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Original {
     pub owner: String,
     pub repo: String,
@@ -29,11 +29,11 @@ pub struct Original {
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Prefetched {
     pub hash: String,
     pub locked: Locked,
     pub original: Original,
-    #[serde(rename = "storePath")]
     pub store_path: PathBuf,
 }
 
@@ -62,6 +62,8 @@ pub fn prefetch_url(url: &Url) -> Result<Prefetched> {
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stdout = stdout.to_string();
+
+    println!("{}", &stdout);
 
     Ok(serde_json::from_str(stdout.as_ref())?)
 }
